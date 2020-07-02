@@ -34,9 +34,9 @@ class Shape extends Component {
     this.initializeCamera();
 
     var positions = [];
-    const nx = 2;
-    const ny = 2;
-    const nz = 2;
+    const nx = 3;
+    const ny = 3;
+    const nz = 3;
     for (var i = 0; i < nx; i++) {
       for (var j = 0; j < ny; j++) {
         for (var k = 0; k < nz; k++) {
