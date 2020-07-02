@@ -5,6 +5,10 @@ Working on a small application for 3D viewing using
 
 Plan to make it work for simple atomistic model viewing
 
+
+## Try it Live 
+Try out the viewer live in your browser here: [live demo](https://marshallmcdonnell.github.io/react-threejs-app/)
+
 ## Quickstart for  Development
 ```
 git clone <repo>
@@ -16,5 +20,3 @@ yarn start
 ```
 yarn deploy
 ```
-
-Checkout the [Live demo](https://marshallmcdonnell.github.io/react-threejs-app/)
