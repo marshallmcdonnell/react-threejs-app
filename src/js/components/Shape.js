@@ -10,33 +10,54 @@ class Shape extends Component {
     this.addSpheres = this.addSpheres.bind(this);
     this.initializeCamera = this.initializeCamera.bind(this);
     this.initializeOrbits = this.initializeOrbits.bind(this);
+    this.handleWindowResize = this.handleWindowResize.bind(this);
     this.shapes = [];
   }
 
   componentDidMount() {
-    const width = this.mount.clientWidth;
-    const height = this.mount.clientHeight;
+    this.sceneSetup();
+    this.addSceneObjects();
+    this.animate();
+    window.addEventListener("resize", this.handleWindowResize);
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.frameId);
+    window.removeEventListener("resize", this.handleWindowResize);
+    this.mount.removeChild(this.renderer.domElement);
+  }
+
+  sceneSetup() {
+    this.width = this.mount.clientWidth;
+    this.height = this.mount.clientHeight;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
 
-    this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      this.width / this.height,
+      0.1,
+      1000
+    );
     let light = new THREE.DirectionalLight(0xffffff, 0.8);
     light.position.set(1, 1, 1);
     this.scene.add(light);
 
+    this.controls = new OrbitControls(this.camera, this.mount);
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.renderer.setSize(width, height);
+    this.renderer.setSize(this.width, this.height);
     this.mount.appendChild(this.renderer.domElement);
+  }
 
+  addSceneObjects() {
     this.initializeOrbits();
     this.initializeCamera();
 
     var positions = [];
-    const nx = 3;
-    const ny = 3;
-    const nz = 3;
+    const nx = 2;
+    const ny = 2;
+    const nz = 2;
     for (var i = 0; i < nx; i++) {
       for (var j = 0; j < ny; j++) {
         for (var k = 0; k < nz; k++) {
@@ -46,13 +67,6 @@ class Shape extends Component {
     }
     this.addSpheres(positions, 1, 3);
     this.addCubes(positions, 1, 2, 3);
-
-    this.animate();
-  }
-
-  componentWillUnmount() {
-    cancelAnimationFrame(this.frameId);
-    this.mount.removeChild(this.renderer.domElement);
   }
 
   addShape(geometry, color, x, y, z) {
@@ -84,6 +98,21 @@ class Shape extends Component {
   animate() {
     this.frameId = window.requestAnimationFrame(this.animate);
     this.renderer.render(this.scene, this.camera);
+
+    this.shapes.forEach((shape) => {
+      shape.rotation.x += 0.05 * Math.random();
+      shape.rotation.y += 0.05 * Math.random();
+    });
+  }
+
+  handleWindowResize() {
+    const width = this.mount.clientWidth;
+    const height = this.mount.clientHeight;
+
+    this.renderer.setSize(width, height);
+    this.camera.aspect = width / height;
+
+    this.camera.updateProjectionMatrix();
   }
 
   initializeCamera() {
@@ -99,8 +128,8 @@ class Shape extends Component {
   }
 
   onDocMouseDown(event) {
-    const x = (event.clientX / this.mount.clientWidth) * 2 - 1;
-    const y = -(event.clientY / this.mount.clientHeight) * 2 + 1;
+    const x = (event.clientX / this.width) * 2 - 1;
+    const y = -(event.clientY / this.height) * 2 + 1;
     const z = 0.5;
     const mouse3D = new THREE.Vector3(x, y, z);
 
@@ -114,17 +143,21 @@ class Shape extends Component {
   }
 
   render() {
+    const width = "100%";
+    const height = "100%";
     return (
-      <div>
-        <div
-          onClick={(e) => this.onDocMouseDown(e)}
-          id="boardCanvas"
-          style={{ width: "80vw", height: "40vw" }}
-          ref={(mount) => {
-            this.mount = mount;
-          }}
-        />
-      </div>
+      <div
+        onClick={(e) => this.onDocMouseDown(e)}
+        id="boardCanvas"
+        ref={(ref) => {
+          this.mount = ref;
+        }}
+        style={{
+          width: width,
+          height: height,
+          position: "absolute",
+        }}
+      />
     );
   }
 }
