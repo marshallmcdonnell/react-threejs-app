@@ -1,8 +1,8 @@
 import React from "react";
-import Shape from "./Shape.js";
+import Scene from "./Scene.js";
 
 const App = () => {
-  return <Shape />;
+  return <Scene />;
 };
 
 export default App;
