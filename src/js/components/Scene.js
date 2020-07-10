@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import * as THREE from "three";
-import { CylinderBufferGeometry } from "three";
 const OrbitControls = require("three-orbit-controls")(THREE);
 var elements = require("./elements");
 
@@ -44,15 +43,27 @@ class Scene extends Component {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xffffff);
 
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      this.width / this.height,
-      0.1,
-      1000
+    const fov = 75;
+    const aspect = this.width / this.height;
+    const near = 0.1;
+    const far = 1000;
+    this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+
+    /*
+    const factor = 100;
+    this.camera = new THREE.OrthographicCamera(
+      this.width / -factor,
+      this.width / factor,
+      this.height / factor,
+      this.height / -factor,
+      near,
+      far
     );
-    this.camera.position.x = 0;
-    this.camera.position.y = 0;
-    this.camera.position.z = 10;
+    */
+
+    this.camera.position.x = 15;
+    this.camera.position.y = 15;
+    this.camera.position.z = 15;
     this.light = new THREE.DirectionalLight(0xffffff, 0.8);
     this.scene.add(this.light);
 
@@ -95,29 +106,41 @@ class Scene extends Component {
       ],
     };
 
-    let nx = 2;
-    let ny = 2;
-    let nz = 2;
-    let offset = 2.0;
-    for (var i = 0; i < nx; i++) {
-      for (var j = 0; j < ny; j++) {
-        for (var k = 0; k < nz; k++) {
+    let xstart = 0;
+    let xend = 2;
+    let ystart = 0;
+    let yend = 2;
+    let zstart = 0;
+    let zend = 2;
+    let offset = 3.0;
+    for (var i = xstart; i <= xend; i++) {
+      for (var j = ystart; j <= yend; j++) {
+        for (var k = zstart; k <= zend; k++) {
           var new_system = JSON.parse(JSON.stringify(water));
-          for (let [key, atom] of Object.entries(new_system.atoms)) {
-            atom.position.x += i * offset;
-            atom.position.y += j * offset;
-            atom.position.z += k * offset;
-          }
-
           const molecule = new THREE.Object3D();
+          molecule.position.x += i * offset;
+          molecule.position.y += j * offset;
+          molecule.position.z += k * offset;
+
           this.addAtomsToParent(molecule, new_system.atoms);
           this.addBondsToParent(molecule, new_system);
+          console.log(molecule.position);
 
           this.system.add(molecule);
           this.objects.push(molecule);
         }
       }
     }
+
+    var axisHelper = new THREE.AxesHelper(10);
+    this.scene.add(axisHelper);
+
+    const groundGeometry = new THREE.PlaneBufferGeometry(10, 10);
+    const groundMaterial = new THREE.MeshPhongMaterial({ color: 0xcc8866 });
+    const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+    groundMesh.rotation.x -= 90 * (Math.PI / 180);
+    groundMesh.position.copy(new THREE.Vector3(5, -1, 5));
+    this.scene.add(groundMesh);
   }
 
   addAtomsToParent(parent, atoms) {
@@ -182,22 +205,6 @@ class Scene extends Component {
     return cylinder;
   }
 
-  animate() {
-    this.frameId = window.requestAnimationFrame(this.animate);
-    this.renderer.render(this.scene, this.camera);
-
-    this.objects.forEach((object) => {
-      object.rotation.x += 0.05 * Math.random();
-      object.rotation.y += 0.05 * Math.random();
-    });
-
-    this.light.position.set(
-      this.camera.position.x + 2,
-      this.camera.position.y + 2,
-      this.camera.position.z
-    );
-  }
-
   handleWindowResize() {
     const width = this.mount.clientWidth;
     const height = this.mount.clientHeight;
@@ -227,6 +234,23 @@ class Scene extends Component {
     if (intersects.length > 0) {
       intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
     }
+  }
+
+  animate() {
+    this.frameId = window.requestAnimationFrame(this.animate);
+    this.renderer.render(this.scene, this.camera);
+
+    this.objects.forEach((object) => {
+      object.rotation.x += Math.random() * 0.1;
+      object.rotation.y += Math.random() * 0.1;
+      object.rotation.z += Math.random() * 0.1;
+    });
+
+    this.light.position.set(
+      this.camera.position.x + 2,
+      this.camera.position.y + 2,
+      this.camera.position.z
+    );
   }
 
   render() {
