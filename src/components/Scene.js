@@ -21,6 +21,8 @@ class Scene extends Component {
     this.handleWindowResize = this.handleWindowResize.bind(this);
     this.objects = [];
     this.scale = 0.5;
+
+    console.log("Props in Scene: ", this.props);
   }
 
   componentDidMount() {
@@ -79,32 +81,7 @@ class Scene extends Component {
     this.system = new THREE.Object3D();
     this.scene.add(this.system);
 
-    let water = {
-      atoms: {
-        1: {
-          symbol: "O",
-          position: { x: 0, y: 0, z: 0 },
-        },
-        2: {
-          symbol: "H",
-          position: { x: 0.758602, y: 0.0, z: 0.504284 },
-        },
-        3: {
-          symbol: "H",
-          position: { x: 0.758602, y: 0.0, z: -0.504284 },
-        },
-      },
-      bonds: [
-        {
-          atomA: 1,
-          atomB: 2,
-        },
-        {
-          atomA: 1,
-          atomB: 3,
-        },
-      ],
-    };
+    console.log("Scene system: ", this.props.system);
 
     let xstart = 0;
     let xend = 2;
@@ -116,7 +93,7 @@ class Scene extends Component {
     for (var i = xstart; i <= xend; i++) {
       for (var j = ystart; j <= yend; j++) {
         for (var k = zstart; k <= zend; k++) {
-          var new_system = JSON.parse(JSON.stringify(water));
+          var new_system = JSON.parse(JSON.stringify(this.props.system));
           const molecule = new THREE.Object3D();
           molecule.position.x += i * offset;
           molecule.position.y += j * offset;
@@ -124,7 +101,6 @@ class Scene extends Component {
 
           this.addAtomsToParent(molecule, new_system.atoms);
           this.addBondsToParent(molecule, new_system);
-          console.log(molecule.position);
 
           this.system.add(molecule);
           this.objects.push(molecule);
@@ -254,12 +230,12 @@ class Scene extends Component {
   }
 
   render() {
-    const width = "100%";
-    const height = "100%";
+    const width = "85%";
+    const height = "85%";
     return (
       <div
         onClick={(e) => this.onDocMouseDown(e)}
-        id="boardCanvas"
+        id="board-canvas"
         ref={(ref) => {
           this.mount = ref;
         }}
