@@ -8,6 +8,9 @@ module.exports = {
     path: path.join(__dirname, "/dist"),
     filename: "bundlefile.js",
   },
+  resolve: {
+    extensions: [".js", ".jsx"],
+  },
   module: {
     rules: [
       {
@@ -23,9 +26,7 @@ module.exports = {
           {
             loader: "css-loader",
             options: {
-              modules: {
-                localIdentName: "[name]__[local]___[hash:base64:5]",
-              },
+              localsConvention: "camelCase",
               sourceMap: true,
             },
           },
