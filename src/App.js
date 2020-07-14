@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "./components/Navbar";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Load from "./pages/Load";
@@ -51,7 +51,7 @@ class App extends React.Component {
     console.log("Render in App for system:", system);
     return (
       <div id="outer-container">
-        <BrowserRouter>
+        <HashRouter>
           <Navbar />
           <main id="page-wrap">
             <Switch>
@@ -73,7 +73,7 @@ class App extends React.Component {
               />
             </Switch>
           </main>
-        </BrowserRouter>
+        </HashRouter>
       </div>
     );
   }
