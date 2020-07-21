@@ -31,6 +31,7 @@ class Load extends React.Component {
             value={this.state.textAreaValue}
             onChange={this.handleFormInputChange}
           />
+          <br></br>
           <button id="xyz-button">Load</button>
         </form>
       </div>
